@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liquid Menu Animation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for the application */
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            overflow: hidden; /* Prevents scrollbars from the canvas */
+            background-color: #f0f2f5;
+        }
+
+        /* Container for the 3D canvas */
+        #canvas-container {
+            position: fixed;
+            top: -150px; /* Adjust to position the animation correctly */
+            right: -250px; /* Adjust to position the animation correctly */
+            width: 800px;
+            height: 800px;
+            z-index: 1000;
+            cursor: pointer;
+        }
+
+        #spline-canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+        
+        /* Container for the menu icons */
+        #menu-content {
+            position: fixed;
+            top: 40px;
+            right: 40px;
+            z-index: 1001; /* Place icons on top of the canvas */
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            align-items: flex-start;
+            pointer-events: none; /* Initially, icons are not clickable */
+            opacity: 0;
+            transform: translateX(20px);
+            transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+        }
+
+        /* When the menu is open, make icons visible and interactive */
+        #menu-content.open {
+            opacity: 1;
+            transform: translateX(0);
+            pointer-events: auto; /* Icons become clickable */
+        }
+        
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            cursor: pointer;
+            color: #1a202c;
+            transition: color 0.2s;
+        }
+        
+        .menu-item svg {
+            width: 28px;
+            height: 28px;
+            stroke-width: 1.5;
+        }
+
+        .menu-item:hover {
+            color: #4a5568;
+        }
+
+        /* Main content of the page */
+        .main-content {
+            padding: 40px;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <!-- This container will hold the Spline animation -->
+    <div id="canvas-container">
+        <canvas id="spline-canvas"></canvas>
+    </div>
+
+    <!-- This container holds the SVG icons for the menu -->
+    <div id="menu-content">
+        <!-- Account Icon -->
+        <div class="menu-item" onclick="alert('Accounts clicked!')">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+            </svg>
+        </div>
+        <!-- What's New Icon -->
+        <div class="menu-item" onclick="alert('What\'s New clicked!')">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.898 20.562L16.5 21.75l-.398-1.188a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.188-.398a2.25 2.25 0 001.423-1.423L16.5 15.75l.398 1.188a2.25 2.25 0 001.423 1.423L19.5 18.75l-1.188.398a2.25 2.25 0 00-1.423 1.423z" />
+            </svg>
+        </div>
+        <!-- Settings Icon -->
+        <div class="menu-item" onclick="alert('Settings clicked!')">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-1.003 1.11-1.226.55-.223 1.19-.223 1.74 0 .55.223 1.02.684 1.11 1.226l.092.548a7.5 7.5 0 01-2.286.948c-.837.2-1.7.2-2.538 0a7.5 7.5 0 01-2.286-.948l.092-.548zM4.5 12.182a7.5 7.5 0 0015 0c0-1.753-.596-3.358-1.602-4.686l-.71-1.065a7.5 7.5 0 00-12.397 0l-.71 1.065A7.5 7.5 0 004.5 12.182zM12 15a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5z" />
+            </svg>
+        </div>
+        <!-- About Us Icon -->
+        <div class="menu-item" onclick="alert('About Us clicked!')">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+            </svg>
+        </div>
+    </div>
+
+    <!-- Dummy content for the main page -->
+    <div class="main-content">
+        <h1 class="text-4xl font-bold mb-4">Your Webpage Title</h1>
+        <p class="text-lg text-gray-600">This is the main content of your website. The interactive menu is floating on the top right.</p>
+        <div class="mt-8 space-y-4">
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-2xl font-bold mb-2">Content Section 1</h2>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor.</p>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-2xl font-bold mb-2">Content Section 2</h2>
+                <p>Cras elementum ultrices diam. Maecenas ligula massa, varius a, semper congue, euismod non, mi. Proin porttitor, orci nec nonummy molestie, enim est eleifend mi, non fermentum diam nisl sit amet erat.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ES Module Shims for browser compatibility -->
+    <script async src="https://unpkg.com/es-module-shims@1.10.0/dist/es-module-shims.js"></script>
+    
+    <script type="importmap-shim">
+    {
+      "imports": {
+        "@splinetool/runtime": "https://unpkg.com/@splinetool/runtime@1.8.3/build/runtime.js"
+      }
+    }
+    </script>
+    
+    <script type="module">
+        import { Application } from '@splinetool/runtime';
+
+        // Get references to the DOM elements
+        const canvas = document.getElementById('spline-canvas');
+        const menuContent = document.getElementById('menu-content');
+        const canvasContainer = document.getElementById('canvas-container');
+
+        let isMenuOpen = false;
+        let splineApp;
+
+        // Initialize the Spline application
+        splineApp = new Application(canvas);
+
+        // Load the scene and set up interactions
+        splineApp.load('https://prod.spline.design/XksNCIrLTkT9BuiX/scene.splinecode')
+
+            .then(() => {
+                console.log('Spline scene loaded successfully.');
+                // We can add more specific object interactions here if needed
+            });
+
+        // Function to toggle the menu state
+        function toggleMenu() {
+            isMenuOpen = !isMenuOpen;
+            
+            if (isMenuOpen) {
+                // Trigger the 'expand' animation/state in Spline
+                splineApp.emitEvent('mouseDown', 'b4067980-4d43-4a7b-a57e-812046b38c35');
+                // Show the menu icons
+                menuContent.classList.add('open');
+            } else {
+                // Trigger the 'collapse' animation/state in Spline
+                splineApp.emitEvent('mouseDown', 'b4067980-4d43-4a7b-a57e-812046b38c35');
+                // Hide the menu icons
+                menuContent.classList.remove('open');
+            }
+        }
+
+        // Add a click listener to the entire canvas container
+        canvasContainer.addEventListener('click', toggleMenu);
+        
+        // Replace alert with a more modern notification if desired
+        window.alert = function(message) {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background-color: white;
+                padding: 16px 24px;
+                border-radius: 8px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+                z-index: 9999;
+                font-family: 'Inter', sans-serif;
+                color: #333;
+                opacity: 0;
+                transition: opacity 0.3s, top 0.3s;
+            `;
+            modal.textContent = message;
+            document.body.appendChild(modal);
+            
+            setTimeout(() => {
+                modal.style.opacity = '1';
+                modal.style.top = '40px';
+            }, 10);
+
+            setTimeout(() => {
+                modal.style.opacity = '0';
+                modal.style.top = '20px';
+                setTimeout(() => document.body.removeChild(modal), 300);
+            }, 3000);
+        };
+    </script>
+
+</body>
+</html>
