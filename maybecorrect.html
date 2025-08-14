@@ -1,0 +1,1463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Therapeutic 3D Animation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+        
+        /* Landing Section */
+        .landing-section {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(135deg, #d1aae5 0%, #f5f1e8 100%);
+            overflow: hidden;
+        }
+        
+        #container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        
+        #overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 100;
+            text-align: center;
+            color: #875db7;
+            pointer-events: none;
+        }
+        
+        #overlay h1 {
+            font-size: 3rem;
+            font-weight: 300;
+            margin-bottom: 1rem;
+            opacity: 0;
+            animation: fadeInUp 2s ease-out 1s forwards;
+        }
+        
+        #overlay p {
+            font-size: 1.2rem;
+            opacity: 0;
+            animation: fadeInUp 2s ease-out 1.5s forwards;
+        }
+        
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+        }
+        
+        /* Content Section */
+        .content-section {
+            position: relative;
+            min-height: 100vh;
+            background: linear-gradient(180deg, #f5f1e8 0%, #d1aae5 100%);
+            padding: 60px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 15px;
+            width: 750px;
+            height: 750px;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 1s ease-out;
+        }
+        
+        .grid-container.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .grid-box {
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 20px;
+            position: relative;
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            cursor: pointer;
+            overflow: hidden;
+        }
+        
+        .grid-box:hover {
+            transform: translateY(-3px);
+        }
+        
+        .grid-box:nth-child(1):hover {
+            box-shadow: 
+                0 15px 40px rgba(255, 255, 255, 0.9),
+                8px 8px 25px rgba(90, 74, 107, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.5);
+        }
+        .grid-box:nth-child(2):hover {
+            box-shadow: 
+                0 15px 40px rgba(255, 255, 255, 0.9),
+                -10px 10px 30px rgba(90, 74, 107, 0.25),
+                8px 0px 25px rgba(90, 74, 107, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.5);
+        }
+        .grid-box:nth-child(3):hover {
+            box-shadow: 
+                0 15px 40px rgba(255, 255, 255, 0.9),
+                -8px 8px 25px rgba(90, 74, 107, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.5);
+        }
+        .grid-box:nth-child(4):hover {
+            box-shadow: 
+                0 15px 40px rgba(255, 255, 255, 0.9),
+                -8px -8px 25px rgba(90, 74, 107, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.5);
+        }
+        .grid-box:nth-child(5):hover {
+            box-shadow: 
+                0 15px 40px rgba(255, 255, 255, 0.9),
+                0px -10px 30px rgba(90, 74, 107, 0.25),
+                8px -8px 25px rgba(90, 74, 107, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.5);
+        }
+        .grid-box:nth-child(6):hover {
+            box-shadow: 
+                0 15px 40px rgba(255, 255, 255, 0.9),
+                -8px -8px 25px rgba(90, 74, 107, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.5);
+        }
+        
+        .grid-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(232, 213, 242, 0.1), rgba(245, 241, 232, 0.1));
+            z-index: 1;
+        }
+        
+        .grid-box:nth-child(1) { 
+            grid-column: span 2; 
+            grid-row: span 1; 
+            box-shadow: 
+                0 10px 30px rgba(255, 255, 255, 0.8),
+                6px 6px 20px rgba(90, 74, 107, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.4);
+        }
+        .grid-box:nth-child(2) { 
+            grid-column: span 1; 
+            grid-row: span 2; 
+            box-shadow: 
+                0 10px 30px rgba(255, 255, 255, 0.8),
+                -8px 8px 25px rgba(90, 74, 107, 0.2),
+                6px 0px 20px rgba(90, 74, 107, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.4);
+        }
+        .grid-box:nth-child(3) { 
+            grid-column: span 1; 
+            grid-row: span 1; 
+            box-shadow: 
+                0 10px 30px rgba(255, 255, 255, 0.8),
+                -6px 6px 20px rgba(90, 74, 107, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.4);
+        }
+        .grid-box:nth-child(4) { 
+            grid-column: span 1; 
+            grid-row: span 1; 
+            box-shadow: 
+                0 10px 30px rgba(255, 255, 255, 0.8),
+                -6px -6px 20px rgba(90, 74, 107, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.4);
+        }
+        .grid-box:nth-child(5) { 
+            grid-column: span 2; 
+            grid-row: span 1; 
+            box-shadow: 
+                0 10px 30px rgba(255, 255, 255, 0.8),
+                0px -8px 25px rgba(90, 74, 107, 0.2),
+                6px -6px 20px rgba(90, 74, 107, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.4);
+        }
+        .grid-box:nth-child(6) { 
+            grid-column: span 1; 
+            grid-row: span 1; 
+            box-shadow: 
+                0 10px 30px rgba(255, 255, 255, 0.8),
+                -6px -6px 20px rgba(90, 74, 107, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.4);
+        }
+        
+        .circle-button {
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #b19cd9, #88c999);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            box-shadow: 
+                0 4px 12px rgba(255, 255, 255, 0.5),
+                0 2px 6px rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            z-index: 10;
+            cursor: pointer;
+        }
+        
+        .circle-button:hover {
+            transform: scale(1.1);
+            box-shadow: 
+                0 6px 16px rgba(255, 255, 255, 0.7),
+                0 3px 8px rgba(255, 255, 255, 0.4);
+        }
+        
+        .floating-particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+        }
+        
+        .particle {
+            position: absolute;
+            background: rgba(232, 213, 242, 0.3);
+            border-radius: 50%;
+            animation: float 8s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.3; }
+            50% { transform: translateY(-30px) rotate(180deg); opacity: 0.6; }
+        }
+        
+        /* Special styles for 3D brain model */
+        .brain-model-container {
+            width: 100%;
+            height: 100%;
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+            pointer-events: auto;
+        }
+        
+        .brain-model-box {
+            cursor: default !important;
+        }
+        
+        .brain-model-box:hover {
+            transform: translateY(-3px);
+        }
+        
+        .brain-model-box::before {
+            display: none !important;
+        }
+        
+        .brain-model-box .circle-button {
+            z-index: 1000;
+            pointer-events: auto;
+        }
+        
+        .sketchfab-embed-wrapper {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            pointer-events: auto;
+        }
+        
+        .sketchfab-embed-wrapper iframe {
+            width: 100% !important;
+            height: 100% !important;
+            border-radius: 20px;
+            border: none;
+            pointer-events: auto;
+        }
+        
+        .box-content {
+            padding: 20px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            z-index: 5;
+        }
+        
+        .box-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #5a4a6b;
+            margin-bottom: 10px;
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        .box-description {
+            font-size: 0.9rem;
+            color: #7a6a8b;
+            line-height: 1.4;
+        }
+
+        /* SVG Icons */
+        .box-icon {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 15px;
+            opacity: 0.8;
+            transition: all 0.3s ease;
+        }
+
+        .box-icon svg {
+            width: 100%;
+            height: 100%;
+            fill: #b19cd9;
+        }
+
+        .grid-box:hover .box-icon {
+            opacity: 1;
+            transform: scale(1.05);
+        }
+
+        /* Expanded view styles */
+        .expanded-view {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(135deg, #e8d5f2 0%, #f5f1e8 100%);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            padding: 40px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .expanded-view.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .expanded-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .back-button {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #b19cd9, #88c999);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            box-shadow: 
+                0 4px 12px rgba(255, 255, 255, 0.5),
+                0 2px 6px rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            margin-right: 20px;
+            border: none;
+        }
+
+        .back-button:hover {
+            transform: scale(1.1);
+            box-shadow: 
+                0 6px 16px rgba(255, 255, 255, 0.7),
+                0 3px 8px rgba(255, 255, 255, 0.4);
+        }
+
+        .expanded-title {
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: #5a4a6b;
+            opacity: 0;
+            transform: translateX(-50px);
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .expanded-title.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .expanded-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.3s;
+        }
+
+        .expanded-content.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .content-placeholder {
+            text-align: center;
+            color: #7a6a8b;
+            font-size: 1.2rem;
+            background: rgba(255, 255, 255, 0.5);
+            padding: 60px 40px;
+            border-radius: 20px;
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            max-width: 600px;
+        }
+
+        /* Book Sessions UI */
+        .book-session-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        .expanded-content.sessions-mode {
+            align-items: center;
+            justify-content: center;
+            padding-top: 0;
+        }
+
+        .book-sessions-view {
+            width: 100%;
+            max-width: 920px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin: 0 auto;
+        }
+
+        .book-session-container.top-right {
+            justify-content: flex-end;
+            align-items: flex-start;
+            height: auto;
+        }
+
+        .book-session-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 22px;
+            color: #ffffff;
+            background: linear-gradient(135deg, #b19cd9, #88c999);
+            border: none;
+            border-radius: 999px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow:
+                0 8px 20px rgba(177, 156, 217, 0.35),
+                0 4px 12px rgba(136, 201, 153, 0.25);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .book-session-btn:hover {
+            transform: translateY(-2px);
+            box-shadow:
+                0 10px 24px rgba(177, 156, 217, 0.45),
+                0 6px 16px rgba(136, 201, 153, 0.35);
+        }
+
+        .plus-icon {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.22);
+        }
+
+        .book-session-btn:hover .plus-icon {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .sessions-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: calc(100vh - 260px);
+            overflow-y: auto;
+            padding-right: 6px;
+        }
+
+        .session-card {
+            position: relative;
+            background: rgba(255, 255, 255, 0.75);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            border-radius: 16px;
+            box-shadow:
+                0 12px 28px rgba(90, 74, 107, 0.18),
+                0 4px 10px rgba(90, 74, 107, 0.12);
+            color: #5a4a6b;
+            overflow: hidden;
+            transition: transform 0.25s ease, box-shadow 0.25s ease, filter 0.2s ease, opacity 0.2s ease;
+        }
+
+        .session-card:hover {
+            transform: translateY(-2px);
+            box-shadow:
+                0 16px 34px rgba(90, 74, 107, 0.22),
+                0 6px 14px rgba(90, 74, 107, 0.12);
+        }
+
+        .session-card.done {
+            opacity: 0.7;
+            filter: grayscale(40%) blur(1px);
+        }
+
+        .session-inner {
+            padding: 16px;
+        }
+
+        .session-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .session-title {
+            font-weight: 700;
+        }
+
+        .session-meta {
+            font-size: 0.9rem;
+            color: #7a6a8b;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            background: rgba(177, 156, 217, 0.18);
+            color: #5a4a6b;
+        }
+
+        .session-details {
+            display: none;
+            margin-top: 8px;
+            color: #635575;
+            line-height: 1.4;
+        }
+
+        .session-card.expanded .session-details {
+            display: block;
+        }
+
+        .session-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .action-btn {
+            padding: 8px 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(90, 74, 107, 0.25);
+            background: rgba(255, 255, 255, 0.6);
+            color: #5a4a6b;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .action-btn.primary {
+            color: #ffffff;
+            border: none;
+            background: linear-gradient(135deg, #b19cd9, #88c999);
+        }
+
+        /* Modal styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(20, 18, 24, 0.25);
+            -webkit-backdrop-filter: blur(6px);
+            backdrop-filter: blur(6px);
+            z-index: 1100;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.25s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            width: min(620px, 92vw);
+            background: rgba(255, 255, 255, 0.75);
+            -webkit-backdrop-filter: blur(14px);
+            backdrop-filter: blur(14px);
+            border-radius: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            box-shadow:
+                0 18px 40px rgba(90, 74, 107, 0.25),
+                0 4px 14px rgba(90, 74, 107, 0.15);
+            padding: 22px;
+            color: #5a4a6b;
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .modal-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            background: linear-gradient(135deg, #b19cd9, #88c999);
+            box-shadow:
+                0 4px 12px rgba(255, 255, 255, 0.5),
+                0 2px 6px rgba(255, 255, 255, 0.3);
+            transition: transform 0.2s ease;
+        }
+
+        .modal-close:hover {
+            transform: scale(1.06);
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            font-weight: 600;
+        }
+
+        .form-control {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            width: 100%;
+            padding: 12px 14px;
+            font-size: 0.95rem;
+            color: #5a4a6b;
+            border-radius: 12px;
+            border: 1px solid rgba(90, 74, 107, 0.25);
+            background: rgba(255,255,255,0.9);
+            outline: none;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 8px;
+        }
+
+        .btn-secondary, .btn-primary {
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-secondary {
+            background: rgba(90, 74, 107, 0.08);
+            color: #5a4a6b;
+        }
+
+        .btn-primary {
+            color: #ffffff;
+            background: linear-gradient(135deg, #b19cd9, #88c999);
+        }
+
+        /* Action Reason Modal */
+        .modal .subtext {
+            font-size: 0.9rem;
+            color: #7a6a8b;
+            margin-bottom: 8px;
+        }
+
+        /* Animation states */
+        .grid-container.expanding {
+            transform: scale(0.9);
+            opacity: 0.5;
+        }
+
+        .grid-box.expanding {
+            position: fixed;
+            z-index: 999;
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .grid-container {
+                width: 90%;
+                height: 80vh;
+                gap: 8px;
+            }
+            
+            .expanded-view {
+                padding: 20px;
+            }
+            
+            .expanded-title {
+                font-size: 2rem;
+            }
+
+            /* Sessions view responsiveness */
+            .book-sessions-view {
+                max-width: 100%;
+            }
+            .sessions-stack {
+                max-height: calc(100vh - 220px);
+            }
+            .book-session-container.top-right {
+                justify-content: center;
+            }
+            .book-session-btn {
+                width: 100%;
+                justify-content: center;
+            }
+            .session-actions {
+                flex-direction: column;
+            }
+            .action-btn {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .sessions-stack {
+                max-height: calc(100vh - 200px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Landing Section -->
+    <div class="landing-section" id="landing">
+        <div id="container">
+            <div class="floating-particles"></div>
+        </div>
+        <div id="overlay">
+            <h1>Now with Mindfullmeet</h1>
+            <p>Discover therapeutic pathways to wellness</p>
+        </div>
+    </div>
+
+    <!-- Content Section -->
+    <div class="content-section" id="content">
+        <div class="grid-container" id="gridContainer">
+            <!-- Book Sessions -->
+            <div class="grid-box" data-page="book-sessions" onclick="expandBox(this, 'Book Sessions')">
+                <div class="box-content">
+                    <div>
+                        <div class="box-icon">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+                            </svg>
+                        </div>
+                        <div class="box-title">Book Sessions</div>
+                        <div class="box-description">Schedule your next therapeutic session</div>
+                    </div>
+                </div>
+                <div class="circle-button">></div>
+            </div>
+            
+            <!-- Upcoming Sessions -->
+            <div class="grid-box" data-page="upcoming-sessions" onclick="expandBox(this, 'Upcoming Sessions')">
+                <div class="box-content">
+                    <div>
+                        <div class="box-icon">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                            </svg>
+                        </div>
+                        <div class="box-title">Upcoming Sessions</div>
+                        <div class="box-description">View your scheduled appointments</div>
+                    </div>
+                </div>
+                <div class="circle-button">></div>
+            </div>
+            
+            <!-- Personal Diary -->
+            <div class="grid-box" data-page="personal-diary" onclick="expandBox(this, 'Personal Diary')">
+                <div class="box-content">
+                    <div>
+                        <div class="box-icon">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                            </svg>
+                        </div>
+                        <div class="box-title">Personal Diary</div>
+                        <div class="box-description">Record your thoughts and feelings</div>
+                    </div>
+                </div>
+                <div class="circle-button">></div>
+            </div>
+            
+            <!-- Homework -->
+            <div class="grid-box" data-page="homework" onclick="expandBox(this, 'Homework')">
+                <div class="box-content">
+                    <div>
+                        <div class="box-icon">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M12,2A3,3 0 0,1 15,5V11A3,3 0 0,1 12,14A3,3 0 0,1 9,11V5A3,3 0 0,1 12,2M19,11C19,14.53 16.39,17.44 13,17.93V21H11V17.93C7.61,17.44 5,14.53 5,11H7A5,5 0 0,0 12,16A5,5 0 0,0 17,11H19Z"/>
+                            </svg>
+                        </div>
+                        <div class="box-title">Homework</div>
+                        <div class="box-description">Complete therapeutic exercises</div>
+                    </div>
+                </div>
+                <div class="circle-button">></div>
+            </div>
+            
+            <!-- Daily Mood Check -->
+            <div class="grid-box" data-page="daily-mood" onclick="expandBox(this, 'Daily Mood Check')">
+                <div class="box-content">
+                    <div>
+                        <div class="box-icon">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M12,2C13.1,2 14,2.9 14,4C14,5.1 13.1,6 12,6C10.9,6 10,5.1 10,4C10,2.9 10.9,2 12,2M21,9V7L15,1L13.5,2.5L16.17,5.17L10.5,10.84L6.84,7.17L2,12L3.41,13.41L6.84,10L10.5,13.66L15,9.17L17.5,11.67L19,10.17L21,12.17V9Z"/>
+                            </svg>
+                        </div>
+                        <div class="box-title">Daily Mood Check</div>
+                        <div class="box-description">Track your daily emotional state</div>
+                    </div>
+                </div>
+                <div class="circle-button">></div>
+            </div>
+            
+            <!-- 3D Brain Model -->
+            <div class="grid-box brain-model-box">
+                <div class="brain-model-container">
+                    <div class="sketchfab-embed-wrapper">
+                        <iframe title="Brain Point Cloud"
+                            frameborder="0" allowfullscreen mozallowfullscreen="true"
+                            webkitallowfullscreen="true"
+                            allow="autoplay; fullscreen; xr-spatial-tracking"
+                            xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share
+                            src="https://sketchfab.com/models/c427ea0aee214141a78eba37bf9b76bb/embed?autostart=1&camera=0&preload=1&transparent=1&ui_animations=0&ui_infos=0&ui_stop=0&ui_inspector=0&ui_watermark_link=0&ui_watermark=0&ui_ar=0&ui_help=0&ui_settings=0&ui_vr=0&ui_fullscreen=0&ui_annotations=0">
+                        </iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Expanded View -->
+    <div class="expanded-view" id="expandedView">
+        <div class="expanded-header">
+            <button class="back-button" onclick="collapseBox()">
+                <
+            </button>
+            <h1 class="expanded-title" id="expandedTitle"></h1>
+        </div>
+        <div class="expanded-content" id="expandedContent">
+            <div class="content-placeholder" id="defaultExpandedPlaceholder">
+                <p>This is where the detailed content for this section would appear. The interface will be populated with relevant tools and information based on the selected category.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Book Session Modal -->
+    <div class="modal-overlay" id="bookSessionModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">Book a Session</div>
+                <button class="modal-close" id="modalCloseBtn">×</button>
+            </div>
+            <div class="form-group">
+                <label for="reasonSelect">Reason</label>
+                <select class="form-control" id="reasonSelect">
+                    <option value="" disabled selected>Select a reason</option>
+                    <option>CBT</option>
+                    <option>Psychodynamic Counseling</option>
+                    <option>Humanistic Counseling</option>
+                    <option>Family Counseling</option>
+                    <option>Couples Counseling</option>
+                    <option>Group Counseling</option>
+                    <option>Career Counseling</option>
+                    <option>Rehabilitation Counseling</option>
+                    <option>Trauma Counseling</option>
+                    <option>Substance Abuse Counseling</option>
+                    <option>Educational / School Counseling</option>
+                    <option>Grief & Bereavement Counseling</option>
+                    <option>Child & Adolescent Counseling</option>
+                    <option>Art / Creative Therapy Counseling</option>
+                    <option>Career Transition & Retirement Counseling</option>
+                    <option>Faith-Based / Pastoral Counseling</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="sessionDate">Date</label>
+                <input type="date" class="form-control" id="sessionDate" />
+            </div>
+            <div class="form-group">
+                <label for="sessionTime">Time</label>
+                <input type="time" class="form-control" id="sessionTime" />
+            </div>
+            <div class="form-group">
+                <label for="preferredMode">Mode</label>
+                <select class="form-control" id="preferredMode">
+                    <option value="" disabled selected>Select mode</option>
+                    <option>Video</option>
+                    <option>In-person</option>
+                    <option>Phone</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="counselorPref">Counselor preference (optional)</label>
+                <input type="text" class="form-control" id="counselorPref" placeholder="e.g., Name or specialization" />
+            </div>
+            <div class="form-group">
+                <label for="notes">Notes (optional)</label>
+                <textarea class="form-control" id="notes" rows="3" placeholder="Add any details you'd like your counselor to know..."></textarea>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-secondary" id="modalCancelBtn">Cancel</button>
+                <button class="btn-primary" id="modalConfirmBtn">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+    // Scene setup
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setClearColor(0x000000, 0);
+    document.getElementById('container').appendChild(renderer.domElement);
+
+    const ambientLight = new THREE.AmbientLight(0x404040, 0.4);
+    scene.add(ambientLight);
+
+    const materials = [
+        new THREE.MeshBasicMaterial({ color: 0xe8d5f2, transparent: true, opacity: 0.08, side: THREE.DoubleSide }),
+        new THREE.MeshBasicMaterial({ color: 0xf5f1e8, transparent: true, opacity: 0.06, side: THREE.DoubleSide }),
+        new THREE.MeshBasicMaterial({ color: 0xd4c5e8, transparent: true, opacity: 0.05, side: THREE.DoubleSide }),
+        new THREE.MeshBasicMaterial({ color: 0xf0ebe0, transparent: true, opacity: 0.07, side: THREE.DoubleSide })
+    ];
+
+    const geometries = [
+        new THREE.SphereGeometry(8, 8, 8),
+        new THREE.SphereGeometry(12, 6, 6),
+        new THREE.SphereGeometry(6, 10, 10),
+        new THREE.SphereGeometry(10, 8, 8)
+    ];
+
+    const ambientShapes = [];
+    const numShapes = 6;
+
+    for (let i = 0; i < numShapes; i++) {
+        const geometry = geometries[Math.floor(Math.random() * geometries.length)];
+        const material = materials[Math.floor(Math.random() * materials.length)];
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.position.x = (Math.random() - 0.5) * 50;
+        mesh.position.y = (Math.random() - 0.5) * 30;
+        mesh.position.z = (Math.random() - 0.5) * 60;
+        mesh.userData = {
+            originalPosition: mesh.position.clone(),
+            floatSpeed: 0.1 + Math.random() * 0.3,
+            scaleSpeed: 0.1 + Math.random() * 0.2,
+            floatOffset: Math.random() * Math.PI * 2,
+            scaleOffset: Math.random() * Math.PI * 2
+        };
+        scene.add(mesh);
+        ambientShapes.push(mesh);
+    }
+
+    camera.position.z = 20;
+    camera.position.y = 5;
+
+    let time = 0;
+
+    function createParticles() {
+        const particleContainer = document.querySelector('.floating-particles');
+        for (let i = 0; i < 15; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.top = Math.random() * 100 + '%';
+            particle.style.width = particle.style.height = (Math.random() * 4 + 2) + 'px';
+            particle.style.animationDelay = Math.random() * 8 + 's';
+            particle.style.animationDuration = (Math.random() * 6 + 6) + 's';
+            particleContainer.appendChild(particle);
+        }
+    }
+
+    createParticles();
+
+    function animate() {
+        requestAnimationFrame(animate);
+        time += 0.005;
+
+        ambientShapes.forEach((shape) => {
+            shape.position.y = shape.userData.originalPosition.y +
+                Math.sin(time * shape.userData.floatSpeed + shape.userData.floatOffset) * 4;
+            shape.position.x = shape.userData.originalPosition.x +
+                Math.cos(time * shape.userData.floatSpeed * 0.3 + shape.userData.floatOffset) * 3;
+            const scale = 1 + Math.sin(time * shape.userData.scaleSpeed + shape.userData.scaleOffset) * 0.2;
+            shape.scale.set(scale, scale, scale);
+        });
+
+        renderer.render(scene, camera);
+    }
+
+    animate();
+
+    // Grid animation on scroll and auto-scroll trigger
+    window.addEventListener('DOMContentLoaded', () => {
+        setTimeout(() => {
+            document.getElementById('gridContainer').classList.add('visible');
+        }, 800);
+
+        // Auto-scroll after 3 seconds to content section
+        setTimeout(() => {
+            const contentSection = document.getElementById('content');
+            const yOffset = contentSection.getBoundingClientRect().top + window.pageYOffset;
+
+            let startTime = null;
+            function smoothScroll(currentTime) {
+                if (!startTime) startTime = currentTime;
+                const progress = currentTime - startTime;
+                const duration = 1800;
+                const easeInOut = (t) => t < 0.5
+                    ? 2 * t * t
+                    : -1 + (4 - 2 * t) * t;
+                const percent = Math.min(progress / duration, 1);
+                const scrollY = window.pageYOffset + (yOffset - window.pageYOffset) * easeInOut(percent);
+                window.scrollTo(0, scrollY);
+                if (progress < duration) {
+                    requestAnimationFrame(smoothScroll);
+                }
+            }
+            requestAnimationFrame(smoothScroll);
+        }, 3000);
+    });
+
+    // Expanded view logic
+    function expandBox(box, title) {
+        const grid = document.getElementById('gridContainer');
+        const expandedView = document.getElementById('expandedView');
+        const expandedTitle = document.getElementById('expandedTitle');
+        const expandedContent = document.getElementById('expandedContent');
+        const page = box && box.dataset ? box.dataset.page : '';
+
+        // Prepare content based on page
+        if (page === 'book-sessions') {
+            expandedContent.classList.add('sessions-mode');
+            expandedContent.innerHTML = `
+                <div class="book-sessions-view">
+                    <div class="book-session-container" id="bookBtnContainer">
+                        <button class="book-session-btn" id="bookSessionBtn">
+                            <span class="plus-icon">+</span>
+                            Book Session
+                        </button>
+                    </div>
+                    <div class="sessions-stack" id="sessionsStack"></div>
+                </div>
+            `;
+            setTimeout(() => {
+                const btn = document.getElementById('bookSessionBtn');
+                if (btn) btn.addEventListener('click', showBookSessionModal);
+                // Render persisted sessions if any
+                renderSessions();
+            }, 0);
+        } else {
+            expandedContent.classList.remove('sessions-mode');
+            expandedContent.innerHTML = document.getElementById('defaultExpandedPlaceholder').outerHTML;
+        }
+
+        grid.classList.add('expanding');
+        setTimeout(() => {
+            grid.style.display = 'none';
+            expandedView.classList.add('active');
+            expandedTitle.textContent = title;
+            setTimeout(() => expandedTitle.classList.add('active'), 100);
+            setTimeout(() => expandedContent.classList.add('active'), 300);
+        }, 600);
+    }
+
+    function collapseBox() {
+        document.getElementById('expandedContent').classList.remove('active');
+        document.getElementById('expandedTitle').classList.remove('active');
+        setTimeout(() => {
+            document.getElementById('expandedView').classList.remove('active');
+            const grid = document.getElementById('gridContainer');
+            grid.style.display = '';
+            setTimeout(() => grid.classList.remove('expanding'), 100);
+        }, 500);
+    }
+    
+    // Modal controls
+    function showBookSessionModal() {
+        const overlay = document.getElementById('bookSessionModal');
+        if (overlay) overlay.classList.add('active');
+    }
+    function hideBookSessionModal() {
+        const overlay = document.getElementById('bookSessionModal');
+        if (overlay) overlay.classList.remove('active');
+    }
+
+    // Wire modal buttons once DOM is ready
+    window.addEventListener('DOMContentLoaded', () => {
+        const closeBtn = document.getElementById('modalCloseBtn');
+        const cancelBtn = document.getElementById('modalCancelBtn');
+        const confirmBtn = document.getElementById('modalConfirmBtn');
+        if (closeBtn) closeBtn.addEventListener('click', hideBookSessionModal);
+        if (cancelBtn) cancelBtn.addEventListener('click', hideBookSessionModal);
+        if (confirmBtn) confirmBtn.addEventListener('click', () => {
+            const reason = (document.getElementById('reasonSelect') || {}).value || '';
+            const date = (document.getElementById('sessionDate') || {}).value || '';
+            const time = (document.getElementById('sessionTime') || {}).value || '';
+            const mode = (document.getElementById('preferredMode') || {}).value || '';
+            const counselor = (document.getElementById('counselorPref') || {}).value || '';
+            const notes = (document.getElementById('notes') || {}).value || '';
+
+            createSession({ reason, date, time, mode, counselor, notes, status: 'upcoming' });
+
+            const btnContainer = document.getElementById('bookBtnContainer');
+            if (btnContainer && loadSessions().length > 0) btnContainer.classList.add('top-right');
+
+            hideBookSessionModal();
+        });
+    });
+
+    const SESSIONS_KEY = 'mm_sessions';
+
+    function loadSessions() {
+        try {
+            const raw = localStorage.getItem(SESSIONS_KEY);
+            if (!raw) return [];
+            const arr = JSON.parse(raw);
+            return Array.isArray(arr) ? arr : [];
+        } catch (_) {
+            return [];
+        }
+    }
+
+    function saveSessions(list) {
+        try {
+            localStorage.setItem(SESSIONS_KEY, JSON.stringify(list));
+        } catch (_) {
+            // ignore
+        }
+    }
+
+    function createSession(session) {
+        const list = loadSessions();
+        const id = 's_' + Math.random().toString(36).slice(2, 9);
+        const createdAt = Date.now();
+        const full = { id, createdAt, reasonLogs: [], ...session };
+        list.push(full);
+        saveSessions(list);
+        addSessionCard(full);
+    }
+
+    function updateSession(sessionId, updater) {
+        const list = loadSessions();
+        const idx = list.findIndex(s => s.id === sessionId);
+        if (idx === -1) return;
+        const updated = { ...list[idx] };
+        updater(updated);
+        list[idx] = updated;
+        saveSessions(list);
+    }
+
+    function renderSessions() {
+        const stack = document.getElementById('sessionsStack');
+        if (!stack) return;
+        stack.innerHTML = '';
+        const list = loadSessions()
+            .slice()
+            .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+        list.forEach(s => addSessionCard(s));
+        updateBookButtonPosition();
+    }
+
+    function updateBookButtonPosition() {
+        const btnContainer = document.getElementById('bookBtnContainer');
+        if (!btnContainer) return;
+        const count = loadSessions().length;
+        btnContainer.classList.toggle('top-right', count > 0);
+    }
+
+    function addSessionCard(session) {
+        const stack = document.getElementById('sessionsStack');
+        if (!stack) return;
+
+        const id = session.id || ('s_' + Math.random().toString(36).slice(2, 9));
+        const wrapper = document.createElement('div');
+        wrapper.className = 'session-card';
+        wrapper.dataset.id = id;
+        wrapper.innerHTML = `
+            <div class="session-inner">
+                <div class="session-header">
+                    <div>
+                        <div class="session-title">${escapeHtml(session.reason || 'Session')}</div>
+                        <div class="session-meta">${escapeHtml(session.date || '')} ${escapeHtml(session.time || '')} · ${escapeHtml(session.mode || '')}</div>
+                    </div>
+                    <span class="badge">${session.status === 'done' ? 'Completed' : 'Upcoming'}</span>
+                </div>
+                <div class="session-details">
+                    ${session.counselor ? `<div><strong>Counselor:</strong> ${escapeHtml(session.counselor)}</div>` : ''}
+                    ${session.notes ? `<div><strong>Notes:</strong> ${escapeHtml(session.notes)}</div>` : ''}
+                    ${Array.isArray(session.reasonLogs) && session.reasonLogs.length ? `<div><strong>Activity:</strong> ${escapeHtml(session.reasonLogs[session.reasonLogs.length-1].type)} – ${escapeHtml(session.reasonLogs[session.reasonLogs.length-1].reason || '')}</div>` : ''}
+                </div>
+                <div class="session-actions">
+                    <button class="action-btn" data-action="expand">${'Elaborate'}</button>
+                    ${session.status === 'done' ?
+                        `<button class="action-btn primary" data-action="mark-undone">Mark as active</button>` :
+                        `<button class="action-btn primary" data-action="mark-done">Mark done</button>
+                         <button class="action-btn" data-action="reschedule">Reschedule</button>
+                         <button class="action-btn" data-action="cancel">Cancel</button>`}
+                </div>
+            </div>
+        `;
+
+        // Prepend to stack to simulate stacking newest on top
+        stack.prepend(wrapper);
+
+        // Wire actions
+        wrapper.addEventListener('click', (e) => {
+            const target = e.target;
+            if (!(target instanceof Element)) return;
+            const action = target.getAttribute('data-action');
+            if (!action) return;
+
+            if (action === 'expand') {
+                wrapper.classList.toggle('expanded');
+            }
+            if (action === 'mark-done') {
+                wrapper.classList.add('done');
+                const badge = wrapper.querySelector('.badge');
+                if (badge) badge.textContent = 'Completed';
+                // swap actions
+                const actions = wrapper.querySelector('.session-actions');
+                if (actions) actions.innerHTML = `<button class="action-btn" data-action="expand">Elaborate</button><button class="action-btn primary" data-action="mark-undone">Mark as active</button>`;
+                updateSession(id, s => { s.status = 'done'; });
+            }
+            if (action === 'mark-undone') {
+                wrapper.classList.remove('done');
+                const badge = wrapper.querySelector('.badge');
+                if (badge) badge.textContent = 'Upcoming';
+                const actions = wrapper.querySelector('.session-actions');
+                if (actions) actions.innerHTML = `<button class=\"action-btn\" data-action=\"expand\">Elaborate</button><button class=\"action-btn primary\" data-action=\"mark-done\">Mark done</button><button class=\"action-btn\" data-action=\"reschedule\">Reschedule</button><button class=\"action-btn\" data-action=\"cancel\">Cancel</button>`;
+                updateSession(id, s => { s.status = 'upcoming'; });
+            }
+            if (action === 'reschedule' || action === 'cancel') {
+                openActionReasonModal(action, id);
+            }
+        });
+    }
+
+    function escapeHtml(text) {
+        return String(text)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
+    // Action reason modal
+    function openActionReasonModal(type, sessionId) {
+        const overlay = ensureActionReasonModal();
+        const title = overlay.querySelector('#actionReasonTitle');
+        const confirmBtn = overlay.querySelector('#actionReasonConfirm');
+        if (title) title.textContent = type === 'reschedule' ? 'Reschedule session' : 'Cancel session';
+        // Toggle date/time fields visibility depending on action
+        const reschedFields = overlay.querySelectorAll('.resched-field');
+        reschedFields.forEach(el => {
+            if (el && el.style) el.style.display = (type === 'reschedule') ? 'block' : 'none';
+        });
+        overlay.classList.add('active');
+        // Remove previous listeners by cloning
+        const newConfirm = confirmBtn.cloneNode(true);
+        confirmBtn.parentNode.replaceChild(newConfirm, confirmBtn);
+        newConfirm.addEventListener('click', () => {
+            const select = overlay.querySelector('#actionReasonSelect');
+            const textarea = overlay.querySelector('#actionReasonText');
+            const reason = (select && select.value) || '';
+            const custom = (textarea && textarea.value) || '';
+            const final = custom || reason;
+            if (type === 'cancel') {
+                // remove from storage
+                const list = loadSessions();
+                const filtered = list.filter(s => s.id !== sessionId);
+                saveSessions(filtered);
+                // remove card
+                const card = document.querySelector(`.session-card[data-id="${sessionId}"]`);
+                if (card && card.parentNode) card.parentNode.removeChild(card);
+                updateBookButtonPosition();
+            } else {
+                const newDate = (overlay.querySelector('#reschedDate') || {}).value || '';
+                const newTime = (overlay.querySelector('#reschedTime') || {}).value || '';
+                updateSession(sessionId, s => {
+                    s.date = newDate || s.date;
+                    s.time = newTime || s.time;
+                    if (!Array.isArray(s.reasonLogs)) s.reasonLogs = [];
+                    s.reasonLogs.push({ type, reason: final, at: Date.now() });
+                });
+                // update UI
+                const card = document.querySelector(`.session-card[data-id="${sessionId}"]`);
+                if (card) {
+                    const meta = card.querySelector('.session-meta');
+                    if (meta) meta.textContent = `${escapeHtml(newDate || '')} ${escapeHtml(newTime || '')} · ${escapeHtml((loadSessions().find(s => s.id === sessionId) || {}).mode || '')}`;
+                    const details = card.querySelector('.session-details');
+                    if (details) {
+                        const activityHtml = `<div><strong>Activity:</strong> ${escapeHtml(type)} – ${escapeHtml(final)}</div>`;
+                        if (details.innerHTML.includes('Activity:')) {
+                            const parts = details.innerHTML.split(/<div><strong>Activity:<\/strong>[\s\S]*?<\/div>/);
+                            details.innerHTML = `${parts[0]}${activityHtml}`;
+                        } else {
+                            details.insertAdjacentHTML('beforeend', activityHtml);
+                        }
+                    }
+                }
+            }
+            overlay.classList.remove('active');
+        });
+        const cancelBtn = overlay.querySelector('#actionReasonCancel');
+        const closeBtn = overlay.querySelector('#actionReasonClose');
+        if (cancelBtn) cancelBtn.onclick = () => overlay.classList.remove('active');
+        if (closeBtn) closeBtn.onclick = () => overlay.classList.remove('active');
+    }
+
+    function ensureActionReasonModal() {
+        let overlay = document.getElementById('actionReasonModal');
+        if (overlay) return overlay;
+        // Build modal if missing (should not generally happen)
+        const div = document.createElement('div');
+        div.className = 'modal-overlay active';
+        div.id = 'actionReasonModal';
+        div.innerHTML = `
+            <div class="modal">
+                <div class="modal-header">
+                    <div class="modal-title" id="actionReasonTitle">Reason</div>
+                    <button class="modal-close" id="actionReasonClose">×</button>
+                </div>
+                <div class="subtext">Please tell us why. You can choose a common reason or write your own.</div>
+                <div class="form-group resched-field" style="display:none;">
+                    <label for="reschedDate">New date</label>
+                    <input type="date" class="form-control" id="reschedDate" />
+                </div>
+                <div class="form-group resched-field" style="display:none;">
+                    <label for="reschedTime">New time</label>
+                    <input type="time" class="form-control" id="reschedTime" />
+                </div>
+                <div class="form-group">
+                    <label for="actionReasonSelect">Common reasons</label>
+                    <select class="form-control" id="actionReasonSelect">
+                        <option value="" selected>Select a common reason</option>
+                        <option>Scheduling conflicts</option>
+                        <option>Illness or health issues</option>
+                        <option>Technical problems</option>
+                        <option>Financial constraints</option>
+                        <option>Emotional readiness</option>
+                        <option>Emergency situations</option>
+                        <option>Forgetfulness</option>
+                        <option>Mismatch with counselor</option>
+                        <option>Workload or academic pressure</option>
+                        <option>Session timing issues</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="actionReasonText">Your reason (optional)</label>
+                    <textarea class="form-control" id="actionReasonText" rows="3" placeholder="Write your own reason..."></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-secondary" id="actionReasonCancel">Cancel</button>
+                    <button class="btn-primary" id="actionReasonConfirm">Confirm</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(div);
+        overlay = div;
+        return overlay;
+    }
+    // adding glass button resource 
+</script>
+
+            </body>
+            </html>
+
